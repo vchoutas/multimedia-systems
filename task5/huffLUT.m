@@ -10,17 +10,10 @@ s = {};
 N = length(p);
 numSymbols = floor(log2(N)) + 1;
 
-treeNode = struct('parentId', [], 'prob', [], 'Id', [], 'isLeaf', []);
+treeNode = struct('parentId', [], 'prob', [], 'id', [], 'isLeaf', [], ...
+    'leftChild', [], 'rightChild', []);
 
-idVector = 1:N;
-idVector = idVector(:);
-% huffmanTree = struct('parentId', zeros(N, 1), 'prob', p, 'id', idVector, ...
-%     'isLeaf', true(N, 1));
-% 
-% 
-% pause
-
-% Initialize the Huffan Tree.
+% Initialize the Huffman Tree.
 huffmanTree = {};
 for i = 1 : N
     huffmanTree{i} = treeNode;
@@ -33,7 +26,6 @@ for i = 1 : N
     % Don't assign the digit until the tree construction begins.
     huffmanTree{i}.digit = '';
 end
-% numLeaves = 
 
 % Create the initial priority queue for the Huffman code construction
 % using all the initial points.
@@ -68,6 +60,8 @@ while (length(priorityQueue) > 1)
     huffmanTree{numNodes}.id = numNodes;
     huffmanTree{numNodes}.isLeaf = false;
     huffmanTree{numNodes}.digit = '';
+    huffmanTree{numNodes}.leftChild = firstNode.id;
+    huffmanTree{numNodes}.rightChild = secondNode.id;
 
     huffmanTree{firstNode.id}.digit = '1';  
     huffmanTree{secondNode.id}.digit = '0';
@@ -86,9 +80,10 @@ for i=1:N
         s{i} = [huffmanTree{index}.digit s{i}];
         index = huffmanTree{index}.parentId;
     end
-    
 end
 
+fprintf('Size of newly created Huffman Tree is: %d \n', ...
+    length(huffmanTree));
 symbols = [1:N];
 
 [dict, avglen] = huffmandict(symbols, p);

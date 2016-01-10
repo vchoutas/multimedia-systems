@@ -1,4 +1,5 @@
 function [D, L] = quantLevels(n, xmin, xmax)
+
 k = 2 ^ n;
 
 Delta = (xmax - xmin) / (k);

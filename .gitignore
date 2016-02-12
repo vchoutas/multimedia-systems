@@ -1,3 +1,9 @@
+*.pdf
+*.aux
+*.toc
+*.lo*
+*.out
+
 *.m~
 *.mat
 *.wav

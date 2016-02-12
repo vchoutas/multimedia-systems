@@ -29,17 +29,16 @@ recoveredLength = length(qihat);
 
 commonLength = min(trueLength, recoveredLength);
 
-fprintf('Comparing with original signal!\n');
 % Compare with the original stream of symbols.
 if sum(abs(qi(1:commonLength) - qihat(1:commonLength))) ~= 0
-    fprintf('ERROR: Decoding not correct!\n');
+    fprintf('Original Signal Comparison TEST: ERROR, Decoding not correct!\n');
     errorIndices = find(abs(qi(1:commonLength) - qihat(1:commonLength)));
     for i = 1 : length(errorIndices)
         fprintf('Error at character %d \n', errorIndices(i));
     end
-    fprintf('FAIL\n')
+    fprintf('Original Signal Comparison TEST: FAIL\n')
 else
-    fprintf('PASS\n')
+    fprintf('Original Signal Comparison TEST: PASS\n')
 end
 % % Alternative test
 % [s,tree]=huffLUT(p);
@@ -63,20 +62,19 @@ recoveredLength = length(qihat);
 commonLength = min(matlabVersionLength, recoveredLength);
 
 % Compare with the MATLAB decoded version.
-fprintf('Comparing our decoder with MATLAB`s Huffman Decoder \n'); 
 if sum(abs(decodedSignal(1:commonLength) - qihat(1:commonLength))) ~= 0
-    fprintf('ERROR: Decoding not correct!\n');
+    fprintf('MATLAB Comparison TEST: ERROR, Decoding not correct!\n');
     errorIndices = find(abs(qi(1:commonLength) - qihat(1:commonLength)));
     for i = 1 : length(errorIndices)
         fprintf('Error at character %d \n', errorIndices(i));
     end
-    fprintf('FAIL\n')
+    fprintf('MATLAB Comparison TEST: FAIL\n')
 else
-    fprintf('PASS\n')
+    fprintf('MATLAB Comparison TEST: PASS\n')
 end
 
-
-if sum(abs(qi-qihat))+nrem==0
+fprintf('Length Comparison Test: ');
+if sum(abs(qi-qihat)) + nrem ==0
     disp('PASS')
 else
     disp('FAIL')

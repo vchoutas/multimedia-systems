@@ -1,7 +1,8 @@
 function [b] = huff(q, s)
-%UNTITLED2 Summary of this function goes here
-%   Detailed explanation goes here
-
+%HUFF Encodes the given signal using the huffman code provided.
+% Q An array containing the indexes of every symbol.
+% S A cell array containing the huffman code for each symbol.
+% B A character array containing the encoded sequence.
 b = '';
 
 for i = 1:length(q)

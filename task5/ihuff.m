@@ -1,7 +1,18 @@
-function [q, n] = ihuff(b, s)
-%UNTITLED3 Summary of this function goes here
-%   Detailed explanation goes here
+function [q, n] = ihuff(b, s, debug)
+%IHUFF Decodes the provided bitstream using the provided huffman code.
+% B The bit stream that must be decoded.
+% S A cell array containing the huffman code for each symbol.
+% DEBUG A optional argument used for more verbose output and debugging.
+% Q The decoded signal.
+% N The number of bits remaining after the decoding procedure.
+ 
+if nargin < 3
+    debug = false;
+end
 
+if debug
+    fprintf('Starting Huffman Decoding\n');
+end
 N = length(s);
 
 treeNode = struct('parentId', [], 'id', [], 'isLeaf', [], ...
@@ -20,23 +31,27 @@ for i = 1 : N
     currentCodeWord = s{i};
     
     root = huffmanTree{1};
-%     fprintf('Current Code Word is %s \n', currentCodeWord);
+    if debug
+        fprintf('Current Code Word is %s \n', currentCodeWord);
+    end
     for k = 1:length(currentCodeWord)        
+        if debug
+            fprintf('Current character is %c \n', currentCodeWord(k));
+        end
         if strcmp(currentCodeWord(k), '0')
-%             fprintf('Right!\n');
+            if debug
+                fprintf('Right!\n');
+            end
             % If the current bit is a zero then go to the right child
             % If it's empty then insert a new node in the tree.
             if isempty(root.rightChild)
-%                 fprintf('Creating new right node!\n');
-                numNodes = numNodes + 1;
-                huffmanTree{numNodes} = treeNode;
-                if (k == length(currentCodeWord))
-                    huffmanTree{numNodes}.symbol = i;
+                if debug
+                    fprintf('Creating new right node!\n');
                 end
-                huffmanTree{numNodes}.isLeaf = k == length(currentCodeWord);
-                huffmanTree{numNodes}.parentId = root.id;
-                huffmanTree{numNodes}.id = numNodes;
-                huffmanTree{numNodes}.digit = '0';
+                numNodes = numNodes + 1;
+
+                huffmanTree{numNodes} = create_node(k, currentCodeWord, ...
+                    root.id, numNodes, '0', i);
                 huffmanTree{root.id}.rightChild = numNodes;
                 
                 % The root for the next iteration is the newly inserted
@@ -46,18 +61,17 @@ for i = 1 : N
                 root = huffmanTree{root.rightChild};
             end
         else
-%             fprintf('Left!\n');
+            if debug
+                fprintf('Left!\n');
+            end
             if isempty(root.leftChild)
-%                 fprintf('Creating new left node!\n');
-                numNodes = numNodes + 1;
-                huffmanTree{numNodes} = treeNode;
-                if (k == length(currentCodeWord))
-                    huffmanTree{numNodes}.symbol = i;
+                if debug
+                    fprintf('Creating new left node!\n');
                 end
-                huffmanTree{numNodes}.isLeaf = k == length(currentCodeWord);
-                huffmanTree{numNodes}.parentId = root.id;
-                huffmanTree{numNodes}.id = numNodes;
-                huffmanTree{numNodes}.digit = '1';
+                numNodes = numNodes + 1;
+                huffmanTree{numNodes} = create_node(k, currentCodeWord, ...
+                    root.id, numNodes, '1', i);
+                
                 huffmanTree{root.id}.leftChild = numNodes;
                 % The root for the next iteration is the newly inserted
                 % node.
@@ -70,20 +84,22 @@ for i = 1 : N
 end
 
 % TEST for code correctness.
-% for i = 1:length(huffmanTree)
-%     if isempty(huffmanTree{i}.symbol)
-%         continue
-%     end
-%     
-%     index = huffmanTree{i}.id;
-%     b = '';
-%     while (~isempty(huffmanTree{index}.parentId))
-%         b = [huffmanTree{index}.digit b];
-%         index = huffmanTree{index}.parentId;
-%     end
-%     fprintf('Code for symbol %d is %s \n', huffmanTree{i}.symbol, ...
-%         b);
-% end
+if debug
+    for i = 1:length(huffmanTree)
+        if isempty(huffmanTree{i}.symbol)
+            continue
+        end
+        
+        index = huffmanTree{i}.id;
+        b = '';
+        while (~isempty(huffmanTree{index}.parentId))
+            b = [huffmanTree{index}.digit b];
+            index = huffmanTree{index}.parentId;
+        end
+        fprintf('Code for symbol %d is %s \n', huffmanTree{i}.symbol, ...
+            b);
+    end
+end
 
 
 q = [];
@@ -113,6 +129,7 @@ end
 
 n = length(b) - decoded;
 
-fprintf('Finished Huffman Decoding! \n');
-
+if debug
+    fprintf('Finished Huffman Decoding! \n');
+end
 end

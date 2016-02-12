@@ -1,12 +1,15 @@
-function [s] = huffLUT(p)
-%UNTITLED3 Summary of this function goes here
-%   Detailed explanation goes here
+function [s] = huffLUT(p, debug)
+%HUFFLUT This function creates the huffman code for a sequence according to
+%the provided probabilities.
+% P The array containing the probabilities of each symbol.
+% DEBUG A optional argument used for more verbose output and debugging.
 
-% sortedProbs = sort(p, 'ascend');
-% initWeightQueue = sortedProbs;
-% combinedWeightQueue = [];
+if nargin < 2
+    debug = false;
+end
 
 s = {};
+
 N = length(p);
 numSymbols = floor(log2(N)) + 1;
 
@@ -14,7 +17,7 @@ treeNode = struct('parentId', [], 'prob', [], 'id', [], 'isLeaf', [], ...
     'leftChild', [], 'rightChild', []);
 
 % Initialize the Huffman Tree.
-huffmanTree = {};
+huffmanTree = cell(N, 1);
 for i = 1 : N
     huffmanTree{i} = treeNode;
     % Assign the probability of the node
@@ -31,9 +34,8 @@ end
 % using all the initial points.
 priorityQueue = huffmanTree;
 
-% Initialize the number of nodes. 
+% Initialize the number of nodes.
 numNodes = N;
-% [m, i] = min(arrayfun(@(i) priorityQueue{i}.prob, 1:numel(priorityQueue)))
 
 while (length(priorityQueue) > 1)
     % Find the node with the smallest probability in the queue.
@@ -48,7 +50,7 @@ while (length(priorityQueue) > 1)
     secondNode = priorityQueue{ind2};
     % Remove the current element from the queue.
     priorityQueue(ind2) = [];
-
+    
     % Increment the number of nodes.
     numNodes = numNodes + 1;
     
@@ -62,8 +64,8 @@ while (length(priorityQueue) > 1)
     huffmanTree{numNodes}.digit = '';
     huffmanTree{numNodes}.leftChild = firstNode.id;
     huffmanTree{numNodes}.rightChild = secondNode.id;
-
-    huffmanTree{firstNode.id}.digit = '1';  
+    
+    huffmanTree{firstNode.id}.digit = '1';
     huffmanTree{secondNode.id}.digit = '0';
     
     huffmanTree{firstNode.id}.parentId = numNodes;
@@ -82,25 +84,28 @@ for i=1:N
     end
 end
 
-fprintf('Size of newly created Huffman Tree is: %d \n', ...
-    length(huffmanTree));
-symbols = [1:N];
 
-[dict, avglen] = huffmandict(symbols, p);
-
-for i = 1:length(dict)
-    trueCode = '';
-    for j=1:length(dict{i, 2})
-        trueCode = [trueCode sprintf('%d', dict{i, 2}(j))];
-    end
+if debug
+    fprintf('Size of newly created Huffman Tree is: %d \n', ...
+        length(huffmanTree));
     
-    if (~strcmp(trueCode, s{i}))
-        fprintf('ERROR for symbol %d \n', i);
-        fprintf('True: %s vs Ours : %s \n', trueCode, ...
-            s{i});
-        fprintf('Symbol Probability %f \n', huffmanTree{i}.prob);
-        pause
-        break
+    symbols = [1:N];
+    
+    [dict, ~] = huffmandict(symbols, p);
+    for i = 1:length(dict)
+        trueCode = '';
+        for j=1:length(dict{i, 2})
+            trueCode = [trueCode sprintf('%d', dict{i, 2}(j))];
+        end
+        
+        if (~strcmp(trueCode, s{i}))
+            fprintf('ERROR for symbol %d \n', i);
+            fprintf('True: %s vs Ours : %s \n', trueCode, ...
+                s{i});
+            fprintf('Symbol Probability %f \n', huffmanTree{i}.prob);
+            pause
+            break
+        end
     end
 end
 

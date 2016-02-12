@@ -1,8 +1,8 @@
 function q = Quant(x, D)
 %QUANT Performs quantization on the input value according to the given
 %   steps.
-% X The current sample
-% D Quantization steps
+% x The current sample
+% D Quantization regions
 
 k = length(D);
 % If the value is larger than the largest level then assign the last

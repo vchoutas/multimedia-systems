@@ -13,44 +13,36 @@ fileID = fopen('temp.mat' ,'w');
 
 %% Load the file to be encoded
 [y, fs] = wavread(wavFilename);
-% sound(y,fs);
-% length(y)
-% pause
+
 %% Reshape y in 1-D vector
 y = reshape(y,2*size(y,1), 1);
-% sound(y,fs);
 
 %% Change in the desired frequency
-y = y';
 x = resample(y,1,3);
 
 %% Find number of windows that will be used
-
-n=floor(length(x)/500);
+n=floor(length(x)/750);
 %Number of elements in each window
 NofEl = floor(length(x)/n);
 
 initstate = initStateEncoder();
 
 initstate.fileId = fileID;
-
+%% Call encoding function
 for i = 0 : n-1
     if i ~= n-1;
         [t, initstate] = encoder(x(i * NofEl + 1 : (i + 1) * NofEl), initstate);
         fprintf(fileID,'%c',t);
-%         length(x((n - 1) * NofEl + 1 : end))
-%         pause
     else
-        length(x((n - 1) * NofEl + 1 : end))
-        pause
         [t, initstate] = encoder(x((n - 1) * NofEl + 1 : end), initstate);
         fprintf(fileID,'%c',t);
     end
 end
+
 fclose(fileID);
 fileID = fopen('temp.mat','r');
 
-
+%% something in order to work
 b = textscan(fileID, '%s', '\n');
 b = b{1};
 b = char(b);

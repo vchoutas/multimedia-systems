@@ -1,5 +1,5 @@
 function myEncoder(wavFilename, codedFilename)
-% wavFilename = 'sample2.wav';
+% wavFilename = 'sample1.wav';
 % codedFilename = 'sample2.mat';
 %% Addpaths in order to use functions from previous tasks
 addpath ../task1/
@@ -17,7 +17,7 @@ fileID = fopen('temp.mat' ,'w');
 % length(y)
 % pause
 %% Reshape y in 1-D vector
-% y = reshape(y,2*size(y,1), 1);
+y = reshape(y,2*size(y,1), 1);
 % sound(y,fs);
 
 % %% Change in the desired frequency
@@ -49,9 +49,9 @@ fclose(fileID);
 fileID = fopen('temp.mat','r');
 
 
-C = textscan(fileID, '%s', '\n');
-
-save codedFilename C
-
+b = textscan(fileID, '%s', '\n');
+b = b{1};
+b = char(b);
+save(codedFilename, 'b');
 
 

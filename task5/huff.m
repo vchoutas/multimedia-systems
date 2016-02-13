@@ -4,7 +4,6 @@ function [b] = huff(q, s)
 % S A cell array containing the huffman code for each symbol.
 % B A character array containing the encoded sequence.
 b = '';
-
 for i = 1:length(q)
     b = [b, s{q(i)}];
 end

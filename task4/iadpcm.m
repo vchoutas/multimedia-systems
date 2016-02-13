@@ -1,3 +1,4 @@
+
 function [xd] = iadpcm(rq, wq, L, wmin, wmax, n)
 %IADPCM Applies the inverse Adaptive Differential Pulse Code Modulation so
 %as to recover the original signal.
@@ -47,4 +48,3 @@ end
 xd(1:length(rq)) = xHat(1:length(rq), 1);
 
 end
-

@@ -16,8 +16,8 @@ elseif (x < min(D))
 else
     % Compute the difference between each level and the sample.
     diffVector = D - x;
-    % Find the index of the levels that are larger than the sample. 
-    ind = find(diffVector > 0);
+    % Find the index of the levels that are larger than the sample.
+    ind = find(diffVector >= 0);
     % The first of them corresponds to the output symbol for the current
     % sample.
     q = ind(1);

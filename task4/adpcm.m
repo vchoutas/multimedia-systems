@@ -1,53 +1,26 @@
-function [rq, wq] = adpcm(x, D, L, m , wmin, wmax, n)
-%ADPCM Applies the Adaptive Differential Pulse Code Modulation algorithm on
-% the input signal.
-% x The input signal.
-% D The  for the input signal.
-% L The quantization levels for the input signal.
-% m The order of the prediction filter.
-% wmin The minimum weight value allowed.
-% wmax The maximum weight value allowed.
-% n The number of quantization levels for the filter coefficients.
-
-% Initialize the vector that will contained the symbols for the quantized
-% weight vector.
-wq  = zeros(m, 1);
-
-% Find the filter Coefficients
-w = lpcoeffs(x, m);
-
-% Calculate the qu
+function [rq, wq]=adpcm(x, D, L, m, wmin, wmax, n)
+addpath ../task3/
+addpath ../task2/
 [Dw, Lw] = quantLevels(n, wmin, wmax);
-for i = 1:length(w)
-    wq(i) = Quant(w(i), Dw);
+x = x';
+w=lpcoeffs(x, m);
+
+for i =1:length(w)
+    wq(i) = Quant(w(i), Dw); 
 end
 
-% Get the quantized weights.
-wd = iQuant(wq, Lw);
+r = x(1);
+rq = Quant(r, D);
 
-% Initialise the output symbol vector.
-rq = zeros(size(x));
-xHat = zeros(length(x), 1);
-for i = 1:m
-    xHat(i) = x(i);
-    rq(i) = Quant(x(i), D);
-end
-
-% Stabilise the transfer function for the quantized weights if necessary.
-stableWeights = stabilise_weights(wd);
-
-% Calculate the symbols for the prediction errors.
-for i=m + 1:length(x)        
-    % Start by calculating the prediction error.
-    d = x(i) - stableWeights' * xHat(i:-1:i - m + 1);
-    % Quantize the prediction error.
-    rq(i) = Quant(d, D);    
-    % Calculate an estimate for the signal for the current time step in
-    % order to use it in the next step to compute the prediction error.
-    xHat(i) = iQuant(rq(i), L) + stableWeights' * xHat(i:-1:i - m + 1);
-end
-
-
-
-end
-
+for i =2 : length(x)
+    if i <= m
+        r(i) = x(i) - w(1:i-1)'*x(i-1 :-1 : 1);
+        rq(i) = Quant(r(i), D); 
+        x(i) = iQuant(rq(i), L) + w(1:i-1)'*x(i-1:-1: 1);
+        
+    else
+        r(i) = x(i) - w'*x(i-1 : -1 :i -m);
+        rq(i) = Quant(r(i), D);
+        x(i) = iQuant(rq(i), L) + w' * x(i-1 : -1 :i -m);
+    end    
+end      

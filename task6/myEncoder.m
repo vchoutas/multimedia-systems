@@ -1,5 +1,5 @@
 function myEncoder(wavFilename, codedFilename)
-% wavFilename = 'sample2.wav';
+% wavFilename = 'sample1.wav';
 % codedFilename = 'sample2.mat';
 %% Addpaths in order to use functions from previous tasks
 addpath ../task1/
@@ -49,9 +49,8 @@ fclose(fileID);
 fileID = fopen('temp.mat','r');
 
 
-C = textscan(fileID, '%s', '\n');
+b = textscan(fileID, '%s', '\n');
 
-save codedFilename C
-
+save(codedFilename, 'b');
 
 

@@ -25,8 +25,8 @@ counter = counter + 64;
 binWmax = b(counter:counter+63);
 maxW = typecast(uint8(bin2dec(reshape(binWmax,8,[]).')),'double');
 counter = counter + 64;
-minW
-maxW
+% minW
+% maxW
 % Read Wq
 for i = 1:m
     wq(i) = bin2dec(b(counter : counter+3));

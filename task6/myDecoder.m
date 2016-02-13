@@ -1,6 +1,6 @@
 function myDecoder(codedFilename  , wavFilename)
 % wavFilename = 'sample.wav';
-% codedFilename = 'sample1_encoded.mat';
+% codedFilename = 'codedFilename.mat';
 addpath ../task1/
 addpath ../task2/
 addpath ../task3/
@@ -9,16 +9,15 @@ addpath ../task5/
 fileID = fopen(codedFilename,'r');
 
 
-% C = textscan(fileID, '%s', '\n');
-C = load(codedFilename);
-% fileID = fopen(codedFilename ,'w');
-% C = cell2mat(C{1});
+load(codedFilename);
+
 initstate = initStateDecoder();
-n = length(C);
+% n = length(C);
 xhat = 0;
 counter =1;
 % C = C;
-C = C.C;
+C=char(b{1});
+
 while counter < length(C) 
     sizeofwindow = bin2dec(C(counter : counter + 23));
 %     if sizeofwindow>5000

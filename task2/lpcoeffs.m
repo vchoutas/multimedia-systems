@@ -49,5 +49,6 @@ v = v(:);
 % Solve the linear system so as to calculate the optimal weights.
 w = R \ v;
 
+
 end
 

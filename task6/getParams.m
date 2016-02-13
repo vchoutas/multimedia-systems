@@ -1,5 +1,5 @@
-function n=getParams(x)
+function n = getParams()
 
-% n = floor(size(x,2)/500);
-% n = 50;
+n = 10000;
+
 end

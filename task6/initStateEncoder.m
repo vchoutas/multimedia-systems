@@ -1,10 +1,23 @@
 function state = initStateEncoder()
-%% Number of previous elements in linear prediction
-m = 1;
-nq = 2;
-%% Quantize find frequencies and HuffmanTree 
-% Create quant levels
+% Initialize the parameters for the linear predictor.
+
+[m, nq] = initPredictionFilter(1, 2);
+
+% The number of bits used to quantize the signal.
+state.signalQuantBits = 2;
+
+% The order for the prediction filter.
 state.m = m;
-state.nq = nq;
-state.NofEl = 500;
+% The number of bits used to quantize the weights of the predictor.
+state.weightQuantBits = nq;
+
+% The size of 
+state.windowSize = getParams();
+
+% Upsampling factor.
+state.L = 1;
+
+% Downsampling Factor
+state.M = 3;
+
 end

@@ -1,6 +1,6 @@
 function myDecoder(codedFilename  , wavFilename)
-wavFilename = 'sample11.wav';
-codedFilename = 'bariemai.mat';
+% wavFilename = 'sample11.wav';
+% codedFilename = 'bariemai.mat';
 addpath ../task1/
 addpath ../task2/
 addpath ../task3/
@@ -33,7 +33,7 @@ pause
 y = xhat(2:end);
 y = y';
 Fs = 44100;
-fd = 20500;
+% fd = 20500;
 % y = y';
 % y = changefs(y,fd, Fs, 'pchip');
 y = resample(y, 3, 1);

@@ -22,13 +22,10 @@ y = reshape(y,2*size(y,1), 1);
 
 %% Change in the desired frequency
 y = y';
-fd = 20500; % desired frequency
 x = resample(y,1,3);
-length(x)
-% ;
+
 %% Find number of windows that will be used
-% s
-% length(x)
+
 n=floor(length(x)/500);
 %Number of elements in each window
 NofEl = floor(length(x)/n);
@@ -41,7 +38,11 @@ for i = 0 : n-1
     if i ~= n-1;
         [t, initstate] = encoder(x(i * NofEl + 1 : (i + 1) * NofEl), initstate);
         fprintf(fileID,'%c',t);
+%         length(x((n - 1) * NofEl + 1 : end))
+%         pause
     else
+        length(x((n - 1) * NofEl + 1 : end))
+        pause
         [t, initstate] = encoder(x((n - 1) * NofEl + 1 : end), initstate);
         fprintf(fileID,'%c',t);
     end

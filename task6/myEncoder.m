@@ -1,6 +1,6 @@
 function myEncoder(wavFilename, codedFilename)
 % wavFilename = 'sample1.wav';
-% codedFilename = 'sample2.mat';
+% codedFilename = 'bariemai.mat';
 %% Addpaths in order to use functions from previous tasks
 addpath ../task1/
 addpath ../task2/
@@ -20,11 +20,11 @@ fileID = fopen('temp.mat' ,'w');
 y = reshape(y,2*size(y,1), 1);
 % sound(y,fs);
 
-% %% Change in the desired frequency
-% y = y';
-% fd = 44100; % desired frequency
-% x = changefs(y, fs, fd);
-x = y;
+%% Change in the desired frequency
+y = y';
+fd = 8200; % desired frequency
+x = changefs(y, fs, fd);
+% ;
 %% Find number of windows that will be used
 % s
 % length(x)

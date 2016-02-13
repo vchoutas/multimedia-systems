@@ -24,11 +24,11 @@ fprintf(fileID, '%c' , dec2bin(initsize, 32));
 %% Change in the desired frequency
 % x = resample(y, 1, 4);
 y = y';
-fd = 8000;
+fd = 21000;
 x = changefs(y, fs, fd, 'spline');
 
 %% Find number of windows that will be used
-n=floor(length(x)/400);
+n=floor(length(x)/2000);
 %Number of elements in each window
 NofEl = floor(length(x)/n);
 

@@ -39,7 +39,7 @@ ytemp = xhat(2:end);
 %% Upsample back in original frequency
 % ytemp = resample(ytemp, 4, 1);
 Fs = 44100;
-fd = 8000;
+fd = 21000;
 % ytemp = ytemp';
 ytemp = changefs(ytemp, fd, Fs, 'spline');
 

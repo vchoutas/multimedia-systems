@@ -10,7 +10,7 @@ counter = 1;
 %% Read huffman from file
 s = {};
 sizeofhumanlength = 4;
-for i = 1 : nq^2
+for i = 1 : 2^nq
     huffmanLength = bin2dec(b(counter : counter + sizeofhumanlength-1));
     counter = counter + sizeofhumanlength;
     s{i} = b(counter : counter + huffmanLength - 1);
@@ -20,7 +20,7 @@ end
 %% Read L from file
 L = zeros(nq,1);
 sizeofL = 64;
-for i = 1: nq^2
+for i = 1: 2^nq
    binL = b(counter : counter + sizeofL - 1);
    L(i) = typecast(uint8(bin2dec(reshape(binL, 8, []).')), 'double');
    counter = counter + sizeofL;

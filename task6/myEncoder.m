@@ -17,11 +17,18 @@ fileID = fopen('temp.mat' ,'w');
 %% Reshape y in 1-D vector
 y = reshape(y,2*size(y,1), 1);
 
+%% Initial size
+initsize = length(y);
+fprintf(fileID, '%c' , dec2bin(initsize, 32));
+
 %% Change in the desired frequency
-x = resample(y,1,3);
+% x = resample(y, 1, 4);
+y = y';
+fd = 8000;
+x = changefs(y, fs, fd, 'spline');
 
 %% Find number of windows that will be used
-n=floor(length(x)/750);
+n=floor(length(x)/400);
 %Number of elements in each window
 NofEl = floor(length(x)/n);
 

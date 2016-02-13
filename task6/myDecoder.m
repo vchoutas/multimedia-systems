@@ -15,7 +15,12 @@ initstate = initStateDecoder();
 
 xhat = 0;
 counter =1;
-C = b;
+sizeoflength = 32;
+binarysize = b(1 : sizeoflength);
+sizeofinitX = bin2dec(binarysize);
+
+C = b(sizeoflength + 1 : end);
+
 
 %% Main decoding algorithm
 while counter < length(C) 
@@ -29,10 +34,23 @@ while counter < length(C)
 end
 
 
-y = xhat(2:end);
+ytemp = xhat(2:end);
 
 %% Upsample back in original frequency
-y = resample(y, 3, 1);
+% ytemp = resample(ytemp, 4, 1);
+Fs = 44100;
+fd = 8000;
+% ytemp = ytemp';
+ytemp = changefs(ytemp, fd, Fs, 'spline');
+
+%% fix in order to have the same size
+
+y = zeros(sizeofinitX, 1);
+if sizeofinitX >= length(ytemp)
+    y(1:length(ytemp)) = ytemp;
+else
+    y = ytemp(1:length(y));
+end
 
 %% Reshape in 2-D vector
 y = reshape(y,length(y)/2,2);

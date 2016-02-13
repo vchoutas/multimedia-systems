@@ -7,40 +7,38 @@ addpath ../task3/
 addpath ../task4/
 addpath ../task5/
 
+
+%% Initialize everything
 load(codedFilename);
 
 initstate = initStateDecoder();
-% n = length(C);
+
 xhat = 0;
 counter =1;
-% C = C;
 C = b;
 
+%% Main decoding algorithm
 while counter < length(C) 
-    sizeofwindow = bin2dec(C(counter : counter + 23));
-    
-    counter = counter + 24;
+    size_of_bin_stream_length = 24;
+    sizeofwindow = bin2dec(C(counter : counter + size_of_bin_stream_length -1));   
+    counter = counter + size_of_bin_stream_length;
     t = C(counter : counter + sizeofwindow -1);
-    counter = counter + sizeofwindow;
-    
+    counter = counter + sizeofwindow;    
     [temp ,initstate]=decoder(t,initstate);
     xhat = [xhat temp];
 end
 
 
-size(xhat)
-pause
 y = xhat(2:end);
-y = y';
-Fs = 44100;
-% fd = 20500;
-% y = y';
-% y = changefs(y,fd, Fs, 'pchip');
+
+%% Upsample back in original frequency
 y = resample(y, 3, 1);
-%  y1 = y;
-% y = [y , 0 , 0 , 0, 0, 0, 0 , 0, 0, 0, 0, 0, 0];
+
+%% Reshape in 2-D vector
 y = reshape(y,length(y)/2,2);
 
+%% Save as wav file
+Fs = 44100;
  wavwrite(y, Fs, wavFilename)
 
 

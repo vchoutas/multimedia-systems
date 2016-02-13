@@ -1,44 +1,54 @@
 function [x,newstate]=decoder(b,state)
 
+% counter is a variable in order to find everything's position 
+% in the bitstream
 
 m = state.m;
 nq = state.nq;
-% Read huffman from file
 counter = 1;
+
+%% Read huffman from file
 s = {};
+sizeofhumanlength = 4;
 for i = 1 : nq^2
-    huffmanLength = bin2dec(b(counter : counter + 3));
-    s{i} = b(counter + 4 : counter + 4 + huffmanLength - 1);
-    counter = counter + 4 + huffmanLength; 
-end
-% Read L from file
-L = zeros(nq,1);
-for i = 1: nq^2
-   binL = b(counter:counter+63);
-   L(i) = typecast(uint8(bin2dec(reshape(binL,8,[]).')),'double');
-   counter = counter + 64;
-end
-% compute Wmin Wmax
-binWmin = b(counter:counter+63);
-minW = typecast(uint8(bin2dec(reshape(binWmin,8,[]).')),'double');
-counter = counter + 64;
-binWmax = b(counter:counter+63);
-maxW = typecast(uint8(bin2dec(reshape(binWmax,8,[]).')),'double');
-counter = counter + 64;
-% minW
-% maxW
-% Read Wq
-for i = 1:m
-    wq(i) = bin2dec(b(counter : counter+3));
-    counter = counter + 4;
+    huffmanLength = bin2dec(b(counter : counter + sizeofhumanlength-1));
+    counter = counter + sizeofhumanlength;
+    s{i} = b(counter : counter + huffmanLength - 1);
+    counter = counter + huffmanLength; 
 end
 
-% Read q
+%% Read L from file
+L = zeros(nq,1);
+sizeofL = 64;
+for i = 1: nq^2
+   binL = b(counter : counter + sizeofL - 1);
+   L(i) = typecast(uint8(bin2dec(reshape(binL, 8, []).')), 'double');
+   counter = counter + sizeofL;
+end
+%% Read Wmin Wmax from file
+sizeofWminmax = 64;
+binWmin = b(counter : counter + sizeofWminmax - 1);
+minW = typecast(uint8(bin2dec(reshape(binWmin, 8, []).')), 'double');
+counter = counter + sizeofWminmax;
+binWmax = b(counter : counter+sizeofWminmax - 1);
+maxW = typecast(uint8(bin2dec(reshape(binWmax, 8, []).')), 'double');
+counter = counter + sizeofWminmax;
+
+% Read Wq
+wqsize = 4;
+for i = 1:m
+    wq(i) = bin2dec(b(counter : counter + wqsize - 1));
+    counter = counter + wqsize;
+end
+
+% Read the coded Huffman
 b = b(counter:end);
 
-% pause
+
+%% Find the inverse huffman
 [rq, n] = ihuff(b, s);
 
+%% Compute the encoded x
 x = iadpcm(rq, wq, L,minW, maxW, 1);
 newstate = state;
 

@@ -39,4 +39,5 @@ fprintf('Length of encoded sequence = %d \n', length(b))
 fprintf('MSE channel 1, 2 = %f , %f \n', totalE(1), totalE(2));
 
 sound(y, fs)
+pause
 sound(compressedY, fs)

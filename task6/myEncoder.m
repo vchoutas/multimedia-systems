@@ -38,7 +38,7 @@ x = reshape(y, 2 * size(y, 1), 1);
 
 
 % Initial size
-initSize = length(x);
+initSize = length(currentAudioSample(:, 1));
 signalSizeWordLen = initialState.signalSizeWordLen;
 % fprintf(fileID, '%c' , dec2bin(initSize, signalSizeWordLen));
 

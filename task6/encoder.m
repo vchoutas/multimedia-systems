@@ -32,9 +32,13 @@ for i =1 : 2 ^ signalQuantBits
 end
 % Create the Huffman Dictionary.
 s = huffLUT(p);
+tmp = 0;
+for i = 1:length(s)
+    tmp = tmp + length(s{i});
+end
 
 % compute size of bitstream
-bitStreamSize = computeHuffmanSize(s, 2 ^ signalQuantBits);
+bitStreamSize = computeHuffmanSize(s, signalQuantBits);
 
 minWeight = min(w);
 maxWeight = max(w);
@@ -63,9 +67,7 @@ for i =1:length(L)
     % to its corresponding binary form.
     
     hexString = num2hex(L(i));
-    
-    quantLevelsBin{i} = hex2bin(hexString);
-    
+    quantLevelsBin{i} = hex2bin(hexString);    
     bitStreamSize = bitStreamSize + length(quantLevelsBin{i});
 end
 
@@ -83,6 +85,7 @@ bitStreamSize = bitStreamSize + length(wq) * weightWordLen;
 % b = huff(rq, s);
 encodedSignal = huff(rq, s);
 
+
 % total length
 % bitStreamSize = bitStreamSize + length(b);
 bitStreamSize = bitStreamSize + length(encodedSignal);
@@ -96,7 +99,7 @@ binCounter = dec2bin(bitStreamSize, windowWordSize);
 % Use a file as a temporary buffer for the code.
 b = [binCounter];
 
-huffmanWordSize = 2 ^ signalQuantBits;
+huffmanWordSize = signalQuantBits;
 
 for i = 1:length(s)
     b = [b dec2bin(length(s{i}), huffmanWordSize) s{i}];

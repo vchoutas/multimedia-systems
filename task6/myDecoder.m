@@ -46,11 +46,15 @@ M = initialState.M;
 % y = resample(y, 3, 1);
 
 % Reshape to 2-D vector so as to restore the 2 channels.
-outputSignal = reshape(xHat, length(xHat) / 2, 2);
+outputSignal = reshape(xHat(1:2*floor(length(xHat) / 2)), ...
+    floor(length(xHat) / 2), 2);
 
 % Upsample back to the original frequency.
-y(:, 1) = resample(outputSignal(:, 1), L, M);
-y(:, 2) = resample(outputSignal(:, 2), L, M);
+tmp(:, 1) = resample(outputSignal(:, 1), L, M);
+tmp(:, 2) = resample(outputSignal(:, 2), L, M);
+
+y(:, 1) = tmp(1:initialSignalSize, 1);
+y(:, 2) = tmp(1:initialSignalSize, 2);
 
 % Append the wav file ending if necessary.
 if isempty(strfind(wavFilename, '.wav'))

@@ -11,13 +11,14 @@ counter = 1;
 %% Read huffman from file
 s = {};
 
-huffmanWordLength = 2 ^ state.signalQuantBits;
-
-for i = 1 : huffmanWordLength
+huffmanWordLength = state.signalQuantBits;
+numWords = 2 ^ huffmanWordLength;
+for i = 1 : numWords
     huffmanLength = bin2dec(b(counter : counter + huffmanWordLength - 1));
     counter = counter + huffmanWordLength;
     
     s{i} = b(counter : counter + huffmanLength - 1);
+    
     counter = counter + huffmanLength; 
 end
 
@@ -86,7 +87,6 @@ b = b(counter:end);
 
 % Find the inverse huffman
 [rq, n] = ihuff(b, s);
-
 
 % Compute the encoded x
 x = iadpcm(rq, wq, L, minWeight, maxWeight, weightWordLen);

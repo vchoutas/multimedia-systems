@@ -4,7 +4,7 @@ function [b, newstate] = encoder(x, state)
 m = state.m;
 signalQuantBits = state.signalQuantBits;
 
-weightQuantBits = state.weightQuantBits;
+weightWordLen = state.weightWordLen;
 
 % Compute the weights for the optimal linear predictor.
 x = x(:);
@@ -22,7 +22,7 @@ xMax = max(x);
 [D, L] = quantLevels(signalQuantBits, xMin, xMax);
 
 % Apply the A-DPCM Algorithm to create the difference signal.
-[rq, wq] = adpcm(x, D, L, m, minWeight, maxWeight, weightQuantBits);
+[rq, wq] = adpcm(x, D, L, m, minWeight, maxWeight, weightWordLen);
 
 % Calculate the probabilities for each symbol.
 p = zeros(2 ^ signalQuantBits, 1);
@@ -33,53 +33,73 @@ end
 s = huffLUT(p);
 
 % compute size of bitstream
-counter = computeHuffmanSize(s, 2 ^ signalQuantBits);
+bitStreamSize = computeHuffmanSize(s, 2 ^ signalQuantBits);
 
-% size of L
-for i =1:length(L)
-    binaryL = reshape(dec2bin(typecast(L(i), 'uint8'),8).',1,[]); 
-    counter = counter + length(binaryL);
+minWeight = min(w);
+maxWeight = max(w);
+
+floatRepresentation = state.floatingPointRep;
+
+% Convert the quantization levels, the minimum and the maximum value of the
+% weights to a single precision represenation if necessary.
+if strcmp(floatRepresentation, 'single')
+    L = typecast(L, 'single');
+    minWeight = typecast(minWeight, 'single');
+    maxWeight = typecast(maxWeight, 'single');
 end
 
-% size of Wmin anf Wmax
-minWeight = reshape(dec2bin(typecast(min(w), 'uint8'),8).',1,[]); 
-maxWeight = reshape(dec2bin(typecast(max(w), 'uint8'),8).',1,[]); 
 
-counter = counter + length(minWeight) + length(maxWeight);
+% Initialize the cell array containing the binary form of the quantization
+% levels.
+quantLevelsBin = cell(length(L), 1);
+
+% Convert the quantization levels to their equivalent binary
+% representation.
+for i =1:length(L)
+    % First convert the current level value to a hexadecimal value and then
+    % to its corresponding binary form.
+    hexString = num2hex(L(i));
+    quantLevelsBin{i} = hex2bin(hexString);
+    bitStreamSize = bitStreamSize + length(quantLevelsBin{i});
+end
+
+minWeightBin = hex2bin(num2hex(minWeight));
+maxWeightBin = hex2bin(num2hex(maxWeight));
+
+bitStreamSize = bitStreamSize + length(minWeightBin) + ...
+    length(maxWeightBin);
 
 % size of bitstream
-counter = counter + length(wq) * 2 ^ weightQuantBits;
+bitStreamSize = bitStreamSize + length(wq) * weightWordLen;
 
 %% Find huffman coding
 b = huff(rq, s);
 
 % total length
-counter = counter + length(b);
+bitStreamSize = bitStreamSize + length(b);
 
 %counters binary representation
 
-
 windowWordSize = state.windowSizeWordLen;
-binCounter = dec2bin(counter, windowWordSize);
+binCounter = dec2bin(bitStreamSize, windowWordSize);
 
 fileId = state.fileID;
 
 % Use a file as a temporary buffer for the code.
 fprintf(fileId,'%c', binCounter);
 
+
 printHuffman(s, fileId, 2 ^ signalQuantBits);
 
-for i =1:length(L)
-    binaryL = reshape(dec2bin(typecast(L(i), 'uint8'), 8).', 1, []);
-    
-    fprintf(fileId, '%c', binaryL);
+for i =1:length(L)    
+    fprintf(fileId, '%c', quantLevelsBin{i});
 end
 
-fprintf(fileId, '%c', minWeight);
-fprintf(fileId, '%c', maxWeight);
+fprintf(fileId, '%c', minWeightBin);
+fprintf(fileId, '%c', maxWeightBin);
 
 for i =1:length(wq)
-    fprintf(fileId,'%c', dec2bin(wq(i), 2 ^ weightQuantBits));
+    fprintf(fileId,'%c', dec2bin(wq(i), weightWordLen));
 end
 
 newstate = state;

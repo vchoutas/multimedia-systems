@@ -1,21 +1,21 @@
-% clear all
-% close all
-% 
-% sampleName = 'sample1';
-% 
-% % Append the wav file ending if necessary.
-% if isempty(strfind(sampleName, '.wav'))
-%     wavFilename = [sampleName '.wav'];
-% else
-%     wavFilename = sampleName;
-% end
-% 
-% [y, fs] = audioread(wavFilename);
-% 
-% codedFileName = ['coded' sampleName];
-% 
-% myEncoder(sampleName, codedFileName);
-% fprintf('Finished Encoding!\n')
+clear all
+close all
+
+sampleName = 'sample1';
+
+% Append the wav file ending if necessary.
+if isempty(strfind(sampleName, '.wav'))
+    wavFilename = [sampleName '.wav'];
+else
+    wavFilename = sampleName;
+end
+
+[y, fs] = audioread(wavFilename);
+
+codedFileName = ['coded' sampleName];
+
+myEncoder(sampleName, codedFileName);
+fprintf('Finished Encoding!\n')
 
 myDecoder(codedFileName, codedFileName);
 fprintf('Finished Decoding!\n')

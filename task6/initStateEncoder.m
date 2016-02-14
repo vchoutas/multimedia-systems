@@ -4,7 +4,7 @@ function state = initStateEncoder()
 [m, nq] = initPredictionFilter(1, 2);
 
 % The number of bits used to quantize the signal.
-state.signalQuantBits = 4;
+state.signalQuantBits = initSignalQuantizer();
 
 % The order for the prediction filter.
 state.m = m;

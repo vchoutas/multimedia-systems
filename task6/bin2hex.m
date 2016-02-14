@@ -34,17 +34,17 @@ for i = 1:length(hexString)
     elseif strcmp(currentHexChar, '1001')
         hexString(i) = '9';
     elseif strcmp(currentHexChar, '1010')
-        hexString(i) = 'A';
+        hexString(i) = 'a';
     elseif strcmp(currentHexChar, '1011')
-        hexString(i) = 'B';
+        hexString(i) = 'b';
     elseif strcmp(currentHexChar, '1100')
-        hexString(i) = 'C';
+        hexString(i) = 'c';
     elseif strcmp(currentHexChar, '1101')
-        hexString(i) = 'D';
+        hexString(i) = 'd';
     elseif strcmp(currentHexChar, '1110')
-        hexString(i) = 'E';
+        hexString(i) = 'e';
     else
-        hexString(i) = 'F';
+        hexString(i) = 'f';
     end
 end
 

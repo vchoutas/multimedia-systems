@@ -23,32 +23,38 @@ x, δηλαδή οριζεται ως πίνακας που έχει στοιχ�
 δίνονται σαν είσοδο στην interp1 του Matlab και μας παράγουν το τελικό y, από το οποίο 
 κρατάμε μόνο τα $floor(\frac{f_{s2}}{f_{s1}}\times(length(x)-1))$ πρώτα στοιχεία.
 
+\noindent
+\begin{minipage}{\linewidth}
 \par Στη συνέχεια για να ελένξουμε την ορθότητα της υλοποίησης μας τρέχουμε την 
 συνάρτηση testQ1. Παρακάτω παρουσιάζονται τα διαγράμματα που προκύπτουν.
-
-\begin{figure}
+\begin{figure}[H]
     \centering
 \begin{subfigure}[h]{0.49\textwidth}
   \centering
-  \includegraphics[width=0.4\paperwidth]{test11.eps}
+  \includegraphics[width=0.35\paperwidth]{test11.eps}
+  \caption{\protect{Δειγματοληψία σε συχνότητα μεγαλύτερης της Nyquist}}
 \end{subfigure}
 %~ \hfill
 \begin{subfigure}[h]{0.49\textwidth}\centering
   \centering
-  \includegraphics[width=0.4\paperwidth]{test12.eps}
+  \includegraphics[width=0.35\paperwidth]{test12.eps}
+  \caption{\protect{Δειγματοληψία σε συχνότητα κοντά στη Nyquist}}
   \end{subfigure}
   %~ \hfill
 \begin{subfigure}[h]{0.49\textwidth}
   \centering
-  \includegraphics[width=0.4\paperwidth]{test13.eps}
+  \includegraphics[width=0.35\paperwidth]{test13.eps}
+  \caption{\protect{Δειγματοληψία σε συχνότητα πολύ κοντά στη Nyquist}}
 \end{subfigure}
 %~ \hfill
 \begin{subfigure}[h]{0.49\textwidth}\centering
   \centering
-  \includegraphics[width=0.4\paperwidth]{test14.eps}
+  \includegraphics[width=0.35\paperwidth]{test14.eps}
+  \caption{\protect{Δειγματοληψία σε συχνότητα μικρότερη της Nyquist}}
   \end{subfigure}
   %~ \hfill
 \end{figure}
 
 \par Παρατηρούμε πως τα σημεία των καμπυλών built-in και changefs ταυτίζονται, 
 άρα η υλοποίησή μας είναι σωστή.
+\end{minipage}

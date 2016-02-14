@@ -13,10 +13,10 @@ s = {};
 
 huffmanWordLength = 2 ^ state.signalQuantBits;
 
-
 for i = 1 : huffmanWordLength
     huffmanLength = bin2dec(b(counter : counter + huffmanWordLength - 1));
     counter = counter + huffmanWordLength;
+    
     s{i} = b(counter : counter + huffmanLength - 1);
     counter = counter + huffmanLength; 
 end
@@ -74,12 +74,10 @@ if strcmp(floatRepresentation, 'single')
 end
 
 % Read Wq
-
-
 % Initialize the array containing 
 wq = zeros(m, 1);
 for i = 1:m
-    wq(i) = bin2dec(b(counter : counter + weightWordLen - 1));
+    wq(i) = bin2dec(b(counter : counter + weightWordLen - 1)) + 1;
     counter = counter + weightWordLen;
 end
 

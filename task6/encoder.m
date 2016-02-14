@@ -24,6 +24,7 @@ xMax = max(x);
 % Apply the A-DPCM Algorithm to create the difference signal.
 [rq, wq] = adpcm(x, D, L, m, minWeight, maxWeight, weightWordLen);
 
+
 % Calculate the probabilities for each symbol.
 p = zeros(2 ^ signalQuantBits, 1);
 for i =1 : 2 ^ signalQuantBits
@@ -108,7 +109,9 @@ end
 b = [b minWeightBin maxWeightBin];
 
 for i =1:length(wq)
-    b = [b dec2bin(wq(i), weightWordLen)];
+%     dec2bin(wq(i) - 1, weightWordLen)
+%     pause
+    b = [b dec2bin(wq(i) - 1, weightWordLen)];
 end
 
 b = [b encodedSignal];

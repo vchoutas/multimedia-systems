@@ -33,13 +33,13 @@ counter = computeHuffmansize(s, 4);
     
 % size of L
 for i =1:length(L)
-    binaryL = reshape(dec2bin(typecast(L(i), 'uint8'),8).',1,[]); 
+    binaryL = reshape(dec2bin(typecast(single(L(i)), 'uint8'),8).',1,[]); 
     counter = counter + length(binaryL);
 end
 
 % size of Wmin anf Wmax
-minW = reshape(dec2bin(typecast(min(w), 'uint8'),8).',1,[]); 
-maxW = reshape(dec2bin(typecast(max(w), 'uint8'),8).',1,[]); 
+minW = reshape(dec2bin(typecast(single(min(w)), 'uint8'),8).',1,[]); 
+maxW = reshape(dec2bin(typecast(single(max(w)), 'uint8'),8).',1,[]); 
 counter = counter + 2*length(minW);
  
 % size of bitstream
@@ -58,7 +58,7 @@ binCounter = dec2bin(counter, 24); %use 24 bits
 fprintf(fileId,'%c',binCounter);
 printHuffman(s, fileId, 4);
 for i =1:length(L)
-    binaryL = reshape(dec2bin(typecast(L(i), 'uint8'),8).',1,[]); 
+    binaryL = reshape(dec2bin(typecast(single(L(i)), 'uint8'),8).',1,[]); 
     fprintf(fileId,'%c', binaryL); 
 end
 fprintf(fileId,'%c',minW); 

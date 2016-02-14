@@ -1,6 +1,7 @@
 function xd=iadpcm(rq, wq, L,wmin,wmax,n)
 addpath ../task3/
 addpath ../task2/
+
 [Dw, Lw] = quantLevels(n, wmin, wmax);
 
 for i = 1:length(rq)

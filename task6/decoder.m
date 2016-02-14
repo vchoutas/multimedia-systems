@@ -19,19 +19,19 @@ end
 
 %% Read L from file
 L = zeros(nq,1);
-sizeofL = 64;
+sizeofL = 32;
 for i = 1: 2^nq
    binL = b(counter : counter + sizeofL - 1);
-   L(i) = typecast(uint8(bin2dec(reshape(binL, 8, []).')), 'double');
+   L(i) = typecast(uint8(bin2dec(reshape(binL, 8, []).')), 'single');
    counter = counter + sizeofL;
 end
 %% Read Wmin Wmax from file
-sizeofWminmax = 64;
+sizeofWminmax = 32;
 binWmin = b(counter : counter + sizeofWminmax - 1);
-minW = typecast(uint8(bin2dec(reshape(binWmin, 8, []).')), 'double');
+minW = typecast(uint8(bin2dec(reshape(binWmin, 8, []).')), 'single');
 counter = counter + sizeofWminmax;
 binWmax = b(counter : counter+sizeofWminmax - 1);
-maxW = typecast(uint8(bin2dec(reshape(binWmax, 8, []).')), 'double');
+maxW = typecast(uint8(bin2dec(reshape(binWmax, 8, []).')), 'single');
 counter = counter + sizeofWminmax;
 
 % Read Wq

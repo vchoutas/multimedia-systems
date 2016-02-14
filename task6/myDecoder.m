@@ -14,7 +14,7 @@ load(codedFilename);
 initstate = initStateDecoder();
 
 xhat = 0;
-counter =1;
+counter = 1;
 sizeoflength = 32;
 binarysize = b(1 : sizeoflength);
 sizeofinitX = bin2dec(binarysize);
@@ -39,7 +39,7 @@ ytemp = xhat(2:end);
 %% Upsample back in original frequency
 % ytemp = resample(ytemp, 4, 1);
 Fs = 44100;
-fd = 21000;
+fd = 16000;
 % ytemp = ytemp';
 ytemp = changefs(ytemp, fd, Fs, 'spline');
 

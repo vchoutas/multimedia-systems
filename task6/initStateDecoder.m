@@ -1,7 +1,7 @@
 function state = initStateDecoder()
 
 m = 1;
-nq = 2;
+nq = 4;
 % 
 % state = {};
 % s = {};

@@ -9,7 +9,7 @@ state.signalQuantBits = 4;
 % The order for the prediction filter.
 state.m = m;
 % The number of bits used to quantize the weights of the predictor.
-state.weightQuantBits = nq;
+state.weightWordLen = nq;
 
 % The size of 
 state.windowSize = getParams();

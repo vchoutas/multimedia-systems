@@ -9,14 +9,14 @@ state.signalQuantBits = 4;
 % The order for the prediction filter.
 state.m = m;
 % The number of bits used to quantize the weights of the predictor.
-state.weightQuantBits = nq;
+state.weightWordLen = nq;
 
 % The size of 
 state.windowSize = getParams();
 
-[signalWordSize, windowSizeWordLen, floatingPointRep] = initWordSizes();
+[signalSizeWordLen, windowSizeWordLen, floatingPointRep] = initWordSizes();
 state.floatingPointRep = floatingPointRep;
-state.signalWordSize = signalWordSize;
+state.signalSizeWordLen = signalSizeWordLen;
 state.windowSizeWordLen = windowSizeWordLen;
 
 % Upsampling factor.

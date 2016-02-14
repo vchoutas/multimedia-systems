@@ -4,7 +4,7 @@ function state = initStateDecoder()
 [m, nq] = initPredictionFilter(1, 2);
 
 % The number of bits used to quantize the signal.
-state.signalQuantBits = 2;
+state.signalQuantBits = 4;
 
 % The order for the prediction filter.
 state.m = m;
@@ -13,6 +13,11 @@ state.weightQuantBits = nq;
 
 % The size of 
 state.windowSize = getParams();
+
+[signalWordSize, windowSizeWordLen, floatingPointRep] = initWordSizes();
+state.floatingPointRep = floatingPointRep;
+state.signalWordSize = signalWordSize;
+state.windowSizeWordLen = windowSizeWordLen;
 
 % Upsampling factor.
 state.L = 3;

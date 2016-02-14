@@ -24,27 +24,39 @@ end
 %% Read L from file
 L = zeros(2 ^ signalQuantBits,1);
 
-sizeofL = 64;
+% Check the type of floating point precision used in order to find the
+% number of bits used for each of the quantization levels.
+if strcmp(state.floatingPointRep, 'single')
+    quantLevelWordSize = 32;
+    weightWordSize = 32;
+else
+    quantLevelWordSize = 64;
+    weightWordSize = 64;
+end
 
 for i = 1: length(L)
-   binL = b(counter : counter + sizeofL - 1);
-   L(i) = typecast(uint8(bin2dec(reshape(binL, 8, []).')), 'double');
-   counter = counter + sizeofL;
+   binL = b(counter : counter + quantLevelWordSize - 1);
+
+   L(i) = typecast(uint8(bin2dec(reshape(binL, 8, []))), 'double');
+
+   counter = counter + quantLevelWordSize;
 end
 
 %% Read Wmin Wmax from file
-sizeofWminmax = 64;
-binWmin = b(counter : counter + sizeofWminmax - 1);
+
+binWmin = b(counter : counter + weightWordSize - 1);
 minW = typecast(uint8(bin2dec(reshape(binWmin, 8, []).')), 'double');
-counter = counter + sizeofWminmax;
-binWmax = b(counter : counter+sizeofWminmax - 1);
+counter = counter + weightWordSize;
+binWmax = b(counter : counter+weightWordSize - 1);
 maxW = typecast(uint8(bin2dec(reshape(binWmax, 8, []).')), 'double');
-counter = counter + sizeofWminmax;
+counter = counter + weightWordSize;
 
 
 % Read Wq
 wqsize = 2 ^ weightQuantBits;
 
+% Initialize the array containing 
+wq = zeros(m, 1);
 for i = 1:m
     wq(i) = bin2dec(b(counter : counter + wqsize - 1));
     counter = counter + wqsize;
@@ -58,7 +70,7 @@ b = b(counter:end);
 [rq, n] = ihuff(b, s);
 
 % Compute the encoded x
-x = iadpcm(rq, wq, L,minW, maxW, weightQuantBits);
+x = iadpcm(rq, wq, L, minW, maxW, weightQuantBits);
 
 newstate = state;
 

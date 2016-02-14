@@ -17,7 +17,7 @@ if fileID < 0
 end
 
 % Append the wav file ending if necessary.
-if isempty(findstr(wavFilename, '.wav'))
+if isempty(strfind(wavFilename, '.wav'))
     wavFilename = [wavFilename '.wav'];
 end
 
@@ -36,12 +36,17 @@ y(:, 2) = resample(currentAudioSample(:, 2), L, M);
 % Reshape y in 1-D vector
 x = reshape(y, 2 * size(y, 1), 1);
 
+
+% Initial size
+initSize = length(x);
+signalSizeWordLen = initialState.signalSizeWordLen;
+fprintf(fileID, '%c' , dec2bin(initSize, signalSizeWordLen));
+
 windowSize = initialState.windowSize;
 initialState.fileID = fileID;
 
 % Calculate the required number of windows.
-numWindows = floor(length(x)/ windowSize)
-
+numWindows = floor(length(x)/ windowSize);
 
 initialState.fileId = fileID;
 %% Call encoding function
@@ -53,6 +58,7 @@ for i = 0 : numWindows - 1
         [t, initialState] = encoder(x((numWindows - 1) * windowSize + 1 : end), initialState);
         fprintf(fileID,'%c', t);
     end
+
 end
 
 fclose(fileID);

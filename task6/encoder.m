@@ -1,5 +1,5 @@
 function [b, newstate] = encoder(x, state)
-% ENCODER 
+% ENCODER
 
 m = state.m;
 signalQuantBits = state.signalQuantBits;
@@ -21,7 +21,7 @@ xMax = max(x);
 % Get the quantization regions and levels for the signal.
 [D, L] = quantLevels(signalQuantBits, xMin, xMax);
 
-% Apply the A-DPCM Algorithm to create the difference signal. 
+% Apply the A-DPCM Algorithm to create the difference signal.
 [rq, wq] = adpcm(x, D, L, m, minWeight, maxWeight, weightQuantBits);
 
 % Calculate the probabilities for each symbol.
@@ -33,49 +33,53 @@ end
 s = huffLUT(p);
 
 % compute size of bitstream
-
 counter = computeHuffmanSize(s, 2 ^ signalQuantBits);
 
+% size of L
 for i =1:length(L)
-    binaryL = reshape(dec2bin(typecast(L(i), 'uint8'), 8).', 1, []); 
+    binaryL = reshape(dec2bin(typecast(L(i), 'uint8'),8).',1,[]); 
     counter = counter + length(binaryL);
 end
 
 % size of Wmin anf Wmax
-minW = reshape(dec2bin(typecast(min(w), 'uint8'), 8).', 1, []); 
-maxW = reshape(dec2bin(typecast(max(w), 'uint8'), 8).', 1, []); 
-counter = counter + 2 * length(minW);
- 
+minWeight = reshape(dec2bin(typecast(min(w), 'uint8'),8).',1,[]); 
+maxWeight = reshape(dec2bin(typecast(max(w), 'uint8'),8).',1,[]); 
+
+counter = counter + length(minWeight) + length(maxWeight);
+
 % size of bitstream
-counter = counter + length(wq) * 4;
+counter = counter + length(wq) * 2 ^ weightQuantBits;
 
 %% Find huffman coding
 b = huff(rq, s);
-
 
 % total length
 counter = counter + length(b);
 
 %counters binary representation
-binCounter = dec2bin(counter, 24); %use 24 bits
+
+
+windowWordSize = state.windowSizeWordLen;
+binCounter = dec2bin(counter, windowWordSize);
 
 fileId = state.fileID;
 
 % Use a file as a temporary buffer for the code.
 fprintf(fileId,'%c', binCounter);
 
-% printHuffman(s, fileId, 2 ^ signalQuantBits);
+printHuffman(s, fileId, 2 ^ signalQuantBits);
 
 for i =1:length(L)
-    binaryL = reshape(dec2bin(typecast(L(i), 'uint8'), 8).', 1, []); 
-    fprintf(fileId, '%c', binaryL); 
+    binaryL = reshape(dec2bin(typecast(L(i), 'uint8'), 8).', 1, []);
+    
+    fprintf(fileId, '%c', binaryL);
 end
 
-fprintf(fileId, '%c', minW); 
-fprintf(fileId, '%c', maxW);
+fprintf(fileId, '%c', minWeight);
+fprintf(fileId, '%c', maxWeight);
 
 for i =1:length(wq)
-    fprintf(fileId,'%c', dec2bin(wq(i), 4));
+    fprintf(fileId,'%c', dec2bin(wq(i), 2 ^ weightQuantBits));
 end
 
 newstate = state;

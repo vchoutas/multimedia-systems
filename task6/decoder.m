@@ -27,7 +27,9 @@ L = zeros(2 ^ signalQuantBits,1);
 
 % Check the type of floating point precision used in order to find the
 % number of bits used for each of the quantization levels.
-if strcmp(state.floatingPointRep, 'single')
+floatRepresentation = state.floatingPointRep;
+
+if strcmp(floatRepresentation, 'single')
     quantLevelWordSize = 32;
     weightWordSize = 32;
 else
@@ -35,12 +37,17 @@ else
     weightWordSize = 64;
 end
 
-floatRepresentation = state.floatingPointRep;
 
 for i = 1: length(L)
    currentBinLevel = b(counter : counter + quantLevelWordSize - 1);
-    
-   L(i) = hex2num(bin2hex(currentBinLevel));
+   
+   if strcmp(floatRepresentation, 'double')
+       L(i) = hex2num(bin2hex(currentBinLevel));
+   else
+       currentLevel = typecast(hex2num(bin2hex(currentBinLevel)), ...
+           'single');
+       L(i) = currentLevel(2);
+   end
    counter = counter + quantLevelWordSize;
 end
 
@@ -61,9 +68,9 @@ counter = counter + weightWordSize;
 % Convert the quantization levels, the minimum and the maximum value of the
 % weights to a single precision represenation if necessary.
 if strcmp(floatRepresentation, 'single')
-    L = typecast(L, 'single');
-    minWeight = typecast(minWeight, 'single');
-    maxWeight = typecast(maxWeight, 'single');
+    L = single(L);
+    minWeight = single(minWeight);
+    maxWeight = single(maxWeight);
 end
 
 % Read Wq

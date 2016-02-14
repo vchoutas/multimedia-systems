@@ -42,10 +42,12 @@ floatRepresentation = state.floatingPointRep;
 
 % Convert the quantization levels, the minimum and the maximum value of the
 % weights to a single precision represenation if necessary.
+
+
 if strcmp(floatRepresentation, 'single')
-    L = typecast(L, 'single');
-    minWeight = typecast(minWeight, 'single');
-    maxWeight = typecast(maxWeight, 'single');
+    L = single(L);
+    minWeight = single(minWeight);
+    maxWeight = single(maxWeight);
 end
 
 
@@ -58,10 +60,14 @@ quantLevelsBin = cell(length(L), 1);
 for i =1:length(L)
     % First convert the current level value to a hexadecimal value and then
     % to its corresponding binary form.
+    
     hexString = num2hex(L(i));
+    
     quantLevelsBin{i} = hex2bin(hexString);
+    
     bitStreamSize = bitStreamSize + length(quantLevelsBin{i});
 end
+
 
 minWeightBin = hex2bin(num2hex(minWeight));
 maxWeightBin = hex2bin(num2hex(maxWeight));

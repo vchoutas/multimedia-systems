@@ -22,10 +22,9 @@ for k = 0:m
     % Shift the input signal by k.
     xShifted = x(1 + k:end);    
     % Calculate the autocorrelation for the current shift.
-    correlationVec(k + 1) = 1 / (length(xShifted)) * sum(x(1:end- k) .* ...
+    correlationVec(k + 1) = sum(x(1:end- k) .* ...
         xShifted);
 end
-
 
 % Create the autocorrelation matrix.
 R = zeros(m, m);
@@ -38,14 +37,13 @@ for i = 1:m
     R(i, 1:i) = correlationVec(i:-1:1);
 end
 
-
 if debug
     varargout{1} = correlationVec;
     varargout{2} = R;
 end
 
 % Create the correlation vector.
-v = correlationVec(2:m+1);
+v = correlationVec(2:m + 1);
 v = v(:);
 
 % Solve the linear system so as to calculate the optimal weights.

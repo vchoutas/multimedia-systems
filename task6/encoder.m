@@ -79,35 +79,39 @@ bitStreamSize = bitStreamSize + length(minWeightBin) + ...
 bitStreamSize = bitStreamSize + length(wq) * weightWordLen;
 
 %% Find huffman coding
-b = huff(rq, s);
+% b = huff(rq, s);
+encodedSignal = huff(rq, s);
 
 % total length
-bitStreamSize = bitStreamSize + length(b);
+% bitStreamSize = bitStreamSize + length(b);
+bitStreamSize = bitStreamSize + length(encodedSignal);
 
 %counters binary representation
 
 windowWordSize = state.windowSizeWordLen;
 binCounter = dec2bin(bitStreamSize, windowWordSize);
 
-fileId = state.fileID;
 
 % Use a file as a temporary buffer for the code.
-fprintf(fileId,'%c', binCounter);
+b = [binCounter];
 
+huffmanWordSize = 2 ^ signalQuantBits;
 
-printHuffman(s, fileId, 2 ^ signalQuantBits);
+for i = 1:length(s)
+    b = [b dec2bin(length(s{i}), huffmanWordSize) s{i}];
+end
 
 for i =1:length(L)    
-    fprintf(fileId, '%c', quantLevelsBin{i});
+    b = [b quantLevelsBin{i}];
 end
 
-fprintf(fileId, '%c', minWeightBin);
-fprintf(fileId, '%c', maxWeightBin);
+b = [b minWeightBin maxWeightBin];
 
 for i =1:length(wq)
-    fprintf(fileId,'%c', dec2bin(wq(i), weightWordLen));
+    b = [b dec2bin(wq(i), weightWordLen)];
 end
 
+b = [b encodedSignal];
 newstate = state;
 
 end

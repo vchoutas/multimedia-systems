@@ -10,11 +10,11 @@ addpath ../task4/
 addpath ../task5/
 
 % Open a file to write
-fileID = fopen('temp.mat', 'w');
-if fileID < 0
-    fprintf('Could not open temporary write buffer \n');
-    return
-end
+% fileID = fopen('temp.mat', 'w');
+% if fileID < 0
+%     fprintf('Could not open temporary write buffer \n');
+%     return
+% end
 
 % Append the wav file ending if necessary.
 if isempty(strfind(wavFilename, '.wav'))
@@ -40,33 +40,29 @@ x = reshape(y, 2 * size(y, 1), 1);
 % Initial size
 initSize = length(x);
 signalSizeWordLen = initialState.signalSizeWordLen;
-fprintf(fileID, '%c' , dec2bin(initSize, signalSizeWordLen));
+% fprintf(fileID, '%c' , dec2bin(initSize, signalSizeWordLen));
 
 windowSize = initialState.windowSize;
-initialState.fileID = fileID;
+% initialState.fileID = fileID;
 
 % Calculate the required number of windows.
 numWindows = floor(length(x)/ windowSize);
 
-initialState.fileId = fileID;
+% initialState.fileId = fileID;
+
+bitStream = [dec2bin(initSize, signalSizeWordLen)];
+
 %% Call encoding function
 for i = 0 : numWindows - 1
     if i ~= numWindows - 1;
         [t, initialState] = encoder(x(i * windowSize + 1 : (i + 1) * windowSize), initialState);
-        fprintf(fileID,'%c', t);
     else
         [t, initialState] = encoder(x((numWindows - 1) * windowSize + 1 : end), initialState);
-        fprintf(fileID,'%c', t);
-    end
-
+    end    
+    bitStream = [bitStream t];
 end
 
-fclose(fileID);
-fileID = fopen('temp.mat', 'r');
-
-b = textscan(fileID, '%s', 'Delimiter', '\n');
-
-b = char(b{1});
+b = bitStream;
 save(codedFilename, 'b');
 
 end

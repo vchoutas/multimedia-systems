@@ -21,6 +21,8 @@ counter = 1;
 % Get the length of the binary word that represents the length of the
 % original signal.
 signalSizeWordLen = initialState.signalSizeWordLen;
+
+windowSizeWordLen = initialState.windowSizeWordLen;
 % Extract this parameter from the bitstream.
 binarysize = b(1:signalSizeWordLen);
 
@@ -29,12 +31,11 @@ C = b(signalSizeWordLen + 1 : end);
 
 %% Main decoding algorithm
 while counter < length(C)
-    size_of_bin_stream_length = 24;
-    sizeofwindow = bin2dec(C(counter : counter + size_of_bin_stream_length -1));
-
-    counter = counter + size_of_bin_stream_length;
-    t = C(counter : counter + sizeofwindow -1);
-    counter = counter + sizeofwindow;
+    currentWindowSize = bin2dec(C(counter:counter + windowSizeWordLen -1));
+    counter = counter + windowSizeWordLen;
+    
+    t = C(counter : counter + currentWindowSize -1);
+    counter = counter + currentWindowSize;
     [temp ,initialState] = decoder(t, initialState);
     xHat = [xHat temp];
 end

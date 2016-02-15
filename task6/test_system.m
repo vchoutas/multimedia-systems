@@ -36,7 +36,7 @@ totalE = sum(e) / size(e, 1);
 load([codedFileName '.mat'])
 
 fprintf('Length of encoded sequence = %d \n', length(b))
-fprintf('MSE channel 1, 2 = %f , %f \n', totalE(1), totalE(2));
+fprintf('MSE = %f\n', totalE(1) + totalE(2));
 
 sound(y, fs)
 pause

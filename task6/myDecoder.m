@@ -37,7 +37,8 @@ while counter < length(C)
     t = C(counter : counter + currentWindowSize -1);
     counter = counter + currentWindowSize;
     [temp ,initialState] = decoder(t, initialState);
-    xHat = [xHat temp];
+    
+    xHat = [xHat; temp];
 end
 
 L = initialState.L;

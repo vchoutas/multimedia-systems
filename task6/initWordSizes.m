@@ -12,7 +12,7 @@ windowSizeWordLen = 24;
 
 % Contains the data type that is used to store the quantization levels for
 % the signal.
-floatingPointSize = 'double';
+floatingPointSize = 'single';
 
 end
 

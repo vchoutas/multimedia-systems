@@ -1,5 +1,5 @@
 function n = getParams()
 
-n = 1000;
+n = 50000;
 
 end

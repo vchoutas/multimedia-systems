@@ -9,13 +9,6 @@ addpath ../task3/
 addpath ../task4/
 addpath ../task5/
 
-% Open a file to write
-% fileID = fopen('temp.mat', 'w');
-% if fileID < 0
-%     fprintf('Could not open temporary write buffer \n');
-%     return
-% end
-
 % Append the wav file ending if necessary.
 if isempty(strfind(wavFilename, '.wav'))
     wavFilename = [wavFilename '.wav'];
@@ -36,13 +29,13 @@ y(:, 2) = resample(currentAudioSample(:, 2), L, M);
 % Reshape y in 1-D vector
 x = reshape(y, 2 * size(y, 1), 1);
 
-
 % Initial size
 initSize = length(currentAudioSample(:, 1));
 signalSizeWordLen = initialState.signalSizeWordLen;
 % fprintf(fileID, '%c' , dec2bin(initSize, signalSizeWordLen));
 
 windowSize = initialState.windowSize;
+
 % initialState.fileID = fileID;
 
 % Calculate the required number of windows.
@@ -61,6 +54,15 @@ for i = 0 : numWindows - 1
     end    
     bitStream = [bitStream t];
 end
+% x = y(:, 2);
+% for i = 0 : numWindows - 1
+%     if i ~= numWindows - 1;
+%         [t, initialState] = encoder(x(i * windowSize + 1 : (i + 1) * windowSize), initialState);
+%     else
+%         [t, initialState] = encoder(x((numWindows - 1) * windowSize + 1 : end), initialState);
+%     end    
+%     bitStream = [bitStream t];
+% end
 
 b = bitStream;
 save(codedFilename, 'b');

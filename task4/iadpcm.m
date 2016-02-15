@@ -45,7 +45,7 @@ xHat(1:m, 1) = dHat(1:m, 1);
 % Calculate the signal values from the prediction errors and the optimal
 % predictor.
 for i = m + 1: length(xHat)
-    xHat(i) = dHat(i) + stableWeights' * xHat(i - 1:-1:i - m); 
+    xHat(i) = dHat(i) + stableWeights' * xHat(i - 1:-1:i - m);
 end
 
 if size(xHat, 2) ~= 1

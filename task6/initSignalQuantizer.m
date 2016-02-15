@@ -1,6 +1,5 @@
 function [numBits] = initSignalQuantizer()
-%INITSIGNALQUANTIZER Summary of this function goes here
-%   Detailed explanation goes here
+%INITSIGNALQUANTIZER Quantizer parameter initializer func.
 
 numBits = 5;
 end

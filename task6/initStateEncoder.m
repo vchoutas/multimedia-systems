@@ -1,6 +1,8 @@
 function state = initStateEncoder()
-% Initialize the parameters for the linear predictor.
+%INITSTATEDECODE Function used to produce the initial state containing the
+% settings for the encoder.
 
+% Initialize the parameters for the linear predictor.
 [m, nq] = initPredictionFilter(1, 16);
 
 % The number of bits used to quantize the signal.

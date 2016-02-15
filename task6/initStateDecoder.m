@@ -1,4 +1,6 @@
 function state = initStateDecoder()
+%INITSTATEDECODE Function used to produce the initial state containing the
+% settings for the decoder.
 
 % Initialize the parameters for the linear predictor.
 [m, nq] = initPredictionFilter();

@@ -1,4 +1,4 @@
-function xd=iadpcm(rq, wq, L,wmin,wmax,n)
+function xHat=iadpcm(rq, wq, L,wmin,wmax,n)
 %IADPCM Applies the inverse Adaptive Differential Pulse Code Modulation so
 %as to recover the original signal.
 % rq The symbols for the prediction errors.
@@ -33,7 +33,7 @@ stableWeights = stabilise_weights(w);
 xHat = zeros(length(rq), 1);
 
 % Initialise the prediction error vector.
-dHat = zeros(size(xHat)); 
+dHat = zeros(size(xHat));
 
 % Dequantize the prediction errors.
 for i = 1:length(rq)
@@ -45,9 +45,11 @@ xHat(1:m, 1) = dHat(1:m, 1);
 % Calculate the signal values from the prediction errors and the optimal
 % predictor.
 for i = m + 1: length(xHat)
-    xHat(i) = dHat(i) + stableWeights' * xHat(i:-1:i - m + 1);
+    xHat(i) = dHat(i) + stableWeights' * xHat(i - 1:-1:i - m); 
 end
 
-xd(1:length(rq)) = xHat(1:length(rq), 1);
+if size(xHat, 2) ~= 1
+    xHat = xHat(:);
+end
 
 end

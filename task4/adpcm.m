@@ -41,15 +41,24 @@ end
 stableWeights = stabilise_weights(wd);
 
 % Calculate the symbols for the prediction errors.
-for i=m + 1:length(x)        
-    % Start by calculating the prediction error.
-    d = x(i) - stableWeights' * xHat(i:-1:i - m + 1);
-    % Quantize the prediction error.
-    rq(i) = Quant(d, D);    
-    % Calculate an estimate for the signal for the current time step in
-    % order to use it in the next step to compute the prediction error.
-    xHat(i) = iQuant(rq(i), L) + stableWeights' * xHat(i:-1:i - m + 1);
+for i=m + 1:length(x)
+% for i = 2:m
+%     if i <= m
+%         d = x(i) - stableWeights(1:i-1)'*xHat(i-1 :-1 : 1);
+%         rq(i) = Quant(d, D);
+%         xHat(i) = iQuant(rq(i), L) + stableWeights(1:i-1)' * xHat(i-1:-1: 1);
+%     else
+        % Start by calculating the prediction error.
+        %     d = x(i) - stableWeights' * xHat(i:-1:i - m + 1);
+        d = x(i) - stableWeights' * xHat(i - 1:-1:i - m);
+        % Quantize the prediction error.
+        rq(i) = Quant(d, D);
+        % Calculate an estimate for the signal for the current time step in
+        % order to use it in the next step to compute the prediction error.
+        xHat(i) = iQuant(rq(i), L) + stableWeights' * xHat(i - 1:-1:i - m);
+%     end
 end
 
+
 end
-  
+

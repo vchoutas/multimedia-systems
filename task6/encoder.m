@@ -24,7 +24,6 @@ xMax = max(x);
 % Apply the A-DPCM Algorithm to create the difference signal.
 [rq, wq] = adpcm(x, D, L, m, minWeight, maxWeight, weightWordLen);
 
-
 % Calculate the probabilities for each symbol.
 p = zeros(2 ^ signalQuantBits, 1);
 for i =1 : 2 ^ signalQuantBits
@@ -32,10 +31,6 @@ for i =1 : 2 ^ signalQuantBits
 end
 % Create the Huffman Dictionary.
 s = huffLUT(p);
-tmp = 0;
-for i = 1:length(s)
-    tmp = tmp + length(s{i});
-end
 
 % compute size of bitstream
 bitStreamSize = computeHuffmanSize(s, signalQuantBits);
@@ -62,11 +57,12 @@ quantLevelsBin = cell(length(L), 1);
 
 % Convert the quantization levels to their equivalent binary
 % representation.
-for i =1:length(L)
+for i =1:2
     % First convert the current level value to a hexadecimal value and then
     % to its corresponding binary form.
     
     hexString = num2hex(L(i));
+    
     quantLevelsBin{i} = hex2bin(hexString);    
     bitStreamSize = bitStreamSize + length(quantLevelsBin{i});
 end
@@ -95,7 +91,6 @@ bitStreamSize = bitStreamSize + length(encodedSignal);
 windowWordSize = state.windowSizeWordLen;
 binCounter = dec2bin(bitStreamSize, windowWordSize);
 
-
 % Use a file as a temporary buffer for the code.
 b = [binCounter];
 
@@ -105,15 +100,13 @@ for i = 1:length(s)
     b = [b dec2bin(length(s{i}), huffmanWordSize) s{i}];
 end
 
-for i =1:length(L)    
+for i =1:2 
     b = [b quantLevelsBin{i}];
 end
 
 b = [b minWeightBin maxWeightBin];
 
 for i =1:length(wq)
-%     dec2bin(wq(i) - 1, weightWordLen)
-%     pause
     b = [b dec2bin(wq(i) - 1, weightWordLen)];
 end
 

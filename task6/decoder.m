@@ -1,6 +1,6 @@
 function [x, newstate] = decoder(b, state)
 
-% counter is a variable in order to find everything's position 
+% counter is a variable in order to find everything's position
 % in the bitstream
 
 m = state.m;
@@ -9,17 +9,17 @@ signalQuantBits = state.signalQuantBits;
 counter = 1;
 
 %% Read huffman from file
-s = {};
-
 huffmanWordLength = state.signalQuantBits;
 numWords = 2 ^ huffmanWordLength;
+
+s = cell(numWords, 1);
 for i = 1 : numWords
     huffmanLength = bin2dec(b(counter : counter + huffmanWordLength - 1));
     counter = counter + huffmanWordLength;
     
     s{i} = b(counter : counter + huffmanLength - 1);
     
-    counter = counter + huffmanLength; 
+    counter = counter + huffmanLength;
 end
 
 
@@ -40,42 +40,51 @@ end
 
 
 for i = 1: length(L)
-   currentBinLevel = b(counter : counter + quantLevelWordSize - 1);
-   
-   if strcmp(floatRepresentation, 'double')
-       L(i) = hex2num(bin2hex(currentBinLevel));
-   else
-       currentLevel = typecast(hex2num(bin2hex(currentBinLevel)), ...
-           'single');
-       L(i) = currentLevel(2);
-   end
-   counter = counter + quantLevelWordSize;
+    if i <= 2
+        currentBinLevel = b(counter : counter + quantLevelWordSize - 1);
+        
+        if strcmp(floatRepresentation, 'double')
+            L(i) = hex2num(bin2hex(currentBinLevel));
+        else
+            currentLevel = typecast(hex2num(bin2hex(currentBinLevel)), ...
+                'single');
+            L(i) = currentLevel(2);
+        end
+        counter = counter + quantLevelWordSize;
+        if i == 2
+            Delta = L(2) - L(1);
+        end
+    else
+        L(i) = L(i - 1) + Delta;
+    end
 end
 
 
 %% Read Wmin Wmax from file
 
 minWeightBin = b(counter:counter + weightWordSize - 1);
-
-minWeight = hex2num(bin2hex(minWeightBin));
-
 counter = counter + weightWordSize;
 
 maxWeightBin = b(counter : counter+weightWordSize - 1);
-maxWeight = hex2num(bin2hex(maxWeightBin));
+
+
+if strcmp(floatRepresentation, 'double')
+    maxWeight = hex2num(bin2hex(maxWeightBin));
+    minWeight = hex2num(bin2hex(minWeightBin));    
+else
+    tmp = typecast(hex2num(bin2hex(minWeightBin)), ...
+        'single');
+    minWeight = tmp(2);
+    tmp = typecast(hex2num(bin2hex(maxWeightBin)), ...
+        'single');
+    maxWeight = tmp(2);
+end
 
 counter = counter + weightWordSize;
 
-% Convert the quantization levels, the minimum and the maximum value of the
-% weights to a single precision represenation if necessary.
-if strcmp(floatRepresentation, 'single')
-    L = single(L);
-    minWeight = single(minWeight);
-    maxWeight = single(maxWeight);
-end
 
 % Read Wq
-% Initialize the array containing 
+% Initialize the array containing
 wq = zeros(m, 1);
 for i = 1:m
     wq(i) = bin2dec(b(counter : counter + weightWordLen - 1)) + 1;

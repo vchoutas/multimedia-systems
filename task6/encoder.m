@@ -1,69 +1,132 @@
 function [b, newstate] = encoder(x, state)
-% D = state.D;
+%ENCODER Takes as input the current state of the encoder and a part of the
+% signal and returns an encoded bitstream, as well the new state of the 
+% decoder.
+%X Is the signal that will be encoded.
+%STATE The current state of the encoder. It is used to store useful
+% information and data of the encoder
+%B The encoded sequence.
+%NEWSTATE The new state of the encoder.
+
+% Get the filter order.
 m = state.m;
-nq = state.nq;
-% L = state.L;
-fileId = state.fileId;
-%% Number of quantization of W
-n = 1;
+% Get the number of bits that will be used when quantizing the signal.
+signalQuantBits = state.signalQuantBits;
 
-%% Compute w
-x = x';
-w=lpcoeffs(x,m);
-wmin = min(w);
-wmax = max(w);
+% Get the number of bits used to store each quantized weight.
+weightWordLen = state.weightWordLen;
 
+% Compute the weights for the optimal linear predictor.
+x = x(:);
+w = lpcoeffs(x, m);
 
-%% Use adpcm
-x = x';
-xmin = min(x);
-xmax = max(x);
-[D, L] = quantLevels(nq, xmin, xmax);
-[rq, wq]=adpcm(x, D, L, m, wmin, wmax, n);
+% Get the weights' range.
+minWeight = min(w);
+maxWeight = max(w);
 
-%% find huffman dictionary
-p = zeros(2^nq,1);
-for i =1 : 2^nq
+if size(x, 2) ~= 1
+    x = x(:);
+end
+% Get the range of the signal.
+xMin = min(x);
+xMax = max(x);
+
+% Get the quantization regions and levels for the signal.
+[D, L] = quantLevels(signalQuantBits, xMin, xMax);
+
+% Apply the A-DPCM Algorithm to create the difference signal.
+[rq, wq] = adpcm(x, D, L, m, minWeight, maxWeight, weightWordLen);
+
+% Calculate the probabilities for each symbol.
+p = zeros(2 ^ signalQuantBits, 1);
+for i =1 : 2 ^ signalQuantBits
     p(i) = length(find(rq == i))/length(rq);
 end
-s=huffLUT(p);
+% Create the Huffman Dictionary.
+s = huffLUT(p);
 
-% isze of huffman dictionary
-counter = computeHuffmansize(s, 4);
-% if counter~=25
-%     counter
-% end
-    
+% compute size of bitstream
+bitStreamSize = computeHuffmanSize(s, signalQuantBits);
 
-for i =1:length(L)
-    binaryL = reshape(dec2bin(typecast(L(i), 'uint8'),8).',1,[]); 
-    counter = counter + length(binaryL);
+minWeight = min(w);
+maxWeight = max(w);
+
+floatRepresentation = state.floatingPointRep;
+
+% Convert the quantization levels, the minimum and the maximum value of the
+% weights to a single precision represenation if necessary.
+if strcmp(floatRepresentation, 'single')
+    L = single(L);
+    minWeight = single(minWeight);
+    maxWeight = single(maxWeight);
 end
 
 
-minW = reshape(dec2bin(typecast(min(w), 'uint8'),8).',1,[]); 
-maxW = reshape(dec2bin(typecast(max(w), 'uint8'),8).',1,[]); 
-counter = counter + 2*length(minW);
- 
-% wq
-counter = counter + length(wq)*4;
+% Initialize the cell array containing the binary form of the quantization
+% levels.
+quantLevelsBin = cell(length(L), 1);
 
-b = huff(rq, s);
-
-counter = counter + length(b);
-
-
-binCounter = dec2bin(counter, 24);
-fprintf(fileId,'%c',binCounter);
-printHuffman(s, fileId, 4);
-for i =1:length(L)
-    binaryL = reshape(dec2bin(typecast(L(i), 'uint8'),8).',1,[]); 
-    fprintf(fileId,'%c', binaryL); 
+% Convert the quantization levels to their equivalent binary
+% representation. 
+% We will only store the first two, since we can calculate the rest from
+% them due to the usage of the uniform quantizer.
+for i =1:2
+    % First convert the current level value to a hexadecimal value and then
+    % to its corresponding binary form.    
+    hexString = num2hex(L(i));    
+    quantLevelsBin{i} = hex2bin(hexString);    
+    bitStreamSize = bitStreamSize + length(quantLevelsBin{i});
 end
-fprintf(fileId,'%c',minW); 
-fprintf(fileId,'%c',maxW);
+
+% Convert the weights to their equivalent binary form.
+minWeightBin = hex2bin(num2hex(minWeight));
+maxWeightBin = hex2bin(num2hex(maxWeight));
+
+bitStreamSize = bitStreamSize + length(minWeightBin) + ...
+    length(maxWeightBin);
+
+% Update the length of the bitstream with the number of weights.
+bitStreamSize = bitStreamSize + length(wq) * weightWordLen;
+
+%% Find huffman coding
+encodedSignal = huff(rq, s);
+
+% total length
+% bitStreamSize = bitStreamSize + length(b);
+bitStreamSize = bitStreamSize + length(encodedSignal);
+
+%counters binary representation
+
+windowWordSize = state.windowSizeWordLen;
+binCounter = dec2bin(bitStreamSize, windowWordSize);
+
+%% Construct the bistream
+
+% Use a file as a temporary buffer for the code.
+b = [binCounter];
+
+huffmanWordSize = signalQuantBits;
+
+% Store the huffman code
+for i = 1:length(s)
+    b = [b dec2bin(length(s{i}), huffmanWordSize) s{i}];
+end
+
+% Store the quantization levels.
+for i =1:2 
+    b = [b quantLevelsBin{i}];
+end
+
+% Append the minimum and maximum weights to the bistream.
+b = [b minWeightBin maxWeightBin];
+
+% Store the filter weights.
 for i =1:length(wq)
-    fprintf(fileId,'%c' ,dec2bin(wq(i), 4));
+    b = [b dec2bin(wq(i) - 1, weightWordLen)];
 end
 
+% Finally append the encoded signal, update the state and return.
+b = [b encodedSignal];
 newstate = state;
+
+end

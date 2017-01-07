@@ -1,57 +1,64 @@
 function myEncoder(wavFilename, codedFilename)
-% wavFilename = 'sample1.wav';
-% codedFilename = 'sample2.mat';
-%% Addpaths in order to use functions from previous tasks
+%ENCODER Takes as input the name of an audio file, reads it and encodes it 
+% to produce a compressed version of the original.
+%wavFileName The name of the input audio file.
+%codedFileName The name of the .mat file that will contain the encoded
+% bistream.
+
+
+% Addpaths in order to use functions from previous tasks
 addpath ../task1/
 addpath ../task2/
 addpath ../task3/
 addpath ../task4/
 addpath ../task5/
 
-%% Open a file to write
-fileID = fopen('temp.mat' ,'w');
-
-%% Load the file to be encoded
-[y, fs] = wavread(wavFilename);
-% sound(y,fs);
-% length(y)
-% pause
-%% Reshape y in 1-D vector
-y = reshape(y,2*size(y,1), 1);
-% sound(y,fs);
-
-% %% Change in the desired frequency
-% y = y';
-% fd = 44100; % desired frequency
-% x = changefs(y, fs, fd);
-x = y;
-%% Find number of windows that will be used
-% s
-% length(x)
-n=floor(length(x)/500);
-%Number of elements in each window
-NofEl = floor(length(x)/n);
-
-initstate = initStateEncoder();
-
-initstate.fileId = fileID;
-
-for i = 0 : n-1
-    if i ~= n-1;
-        [t, initstate] = encoder(x(i * NofEl + 1 : (i + 1) * NofEl), initstate);
-        fprintf(fileID,'%c',t);
-    else
-        [t, initstate] = encoder(x((n - 1) * NofEl + 1 : end), initstate);
-        fprintf(fileID,'%c',t);
-    end
+% Append the wav file ending if necessary.
+if isempty(strfind(wavFilename, '.wav'))
+    wavFilename = [wavFilename '.wav'];
 end
-fclose(fileID);
-fileID = fopen('temp.mat','r');
 
+% Load the file to be encoded
+[currentAudioSample, fs] = audioread(wavFilename);
 
-b = textscan(fileID, '%s', '\n');
-b = b{1};
-b = char(b);
+% Find number of windows that will be used
+initialState = initStateEncoder();
+
+% Get the resampling parameters.
+L = initialState.L;
+M = initialState.M;
+% Change in the desired frequency
+
+y(:, 1) = resample(currentAudioSample(:, 1), L, M);
+y(:, 2) = resample(currentAudioSample(:, 2), L, M);
+% Reshape y in 1-D vector
+x = reshape(y, 2 * size(y, 1), 1);
+
+% Initial size
+initSize = length(currentAudioSample(:, 1));
+signalSizeWordLen = initialState.signalSizeWordLen;
+
+% Get the number of windows that will be used to encode the signal
+windowSize = initialState.windowSize;
+
+% Calculate the required number of windows.
+numWindows = floor(length(x)/ windowSize);
+
+% Store the size of the orignal signal in the bitstream.
+bitStream = [dec2bin(initSize, signalSizeWordLen)];
+
+%% Call encoding function on every window of the signal.
+for i = 0 : numWindows - 1
+    if i ~= numWindows - 1;
+        [t, initialState] = encoder(x(i * windowSize + 1 : (i + 1) * windowSize), initialState);
+    else
+        [t, initialState] = encoder(x((numWindows - 1) * windowSize + 1 : end), initialState);
+    end    
+    bitStream = [bitStream t];
+end
+
+% Store the bitstream in provided file.
+b = bitStream;
 save(codedFilename, 'b');
 
-
+end

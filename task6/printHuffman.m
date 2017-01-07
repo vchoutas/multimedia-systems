@@ -9,5 +9,5 @@ for i =1:length(s)
    binary_length = dec2bin(words_length, sizeofwords); 
 %    counter = counter + binary_length;
    fprintf(fileId,'%c', binary_length);
-   fprintf(fileId,'%c',s{i});
+   fprintf(fileId,'%c', s{i});
 end

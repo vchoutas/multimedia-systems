@@ -1,5 +1,5 @@
-function n=getParams(x)
+function n = getParams()
+%GETPARAMS Returns the size of the window used to encode the signal.
+n = 50000;
 
-% n = floor(size(x,2)/500);
-% n = 50;
 end

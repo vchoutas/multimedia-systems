@@ -1,4 +1,4 @@
-% function q = Quant(x, D)
+function q = Quant(x, D)
 % %QUANT Performs quantization on the input value according to the given
 % %   steps.
 % % x The current sample
@@ -22,11 +22,6 @@
 %     % sample.
 %     q = ind(1);
 % end
-% 
-% 
-% end
-% 
-function q = Quant(x, D)
 
 
 k = length(D);
@@ -36,4 +31,6 @@ for i = k : -1 : 1
         q = i + 1;
         break;
     end
+end
+
 end

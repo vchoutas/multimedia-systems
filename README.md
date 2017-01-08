@@ -5,6 +5,10 @@ system. It was the main assignment for the Multimedia Systems and Virtual Realit
 course of the Electrical and Computer Engineering Department of the Aristotle University
 of Thessaloniki.
 
+## Authors
+*  [Vassilis Choutas](https://github.com/vasilish)
+*  [Giorgos Papoudakis](https://github.com/papoudakis)
+
 ## Encoder
 
 The encoding procedure is implemented using the following steps:
@@ -31,3 +35,9 @@ Iterate over the windows and decode them one at a time:
 5. Concatenate the reconstructed windows
 6. Upsample the signal to it's original frequency
 
+## Results
+
+![alt-text-1](https://github.com/vasilish/multimedia-systems/blob/master/report/images/compression.png
+  "Compression Graph")
+![alt-text-2](https://github.com/vasilish/multimedia-systems/blob/master/report/images/mse.png
+  "Mean Squared Error Graph")

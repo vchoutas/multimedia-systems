@@ -22,9 +22,9 @@ The encoding procedure is implemented using the following steps:
 
 ## Decoder
 
-Iterave over the windows and decode them one at a time:
+Iterate over the windows and decode them one at a time:
 
-1. Extract the stored data from the bitstream
+1. Extract the stored data from the bit stream
 2. Reconstruct the quantizer
 3. Decode the data using the huffman tree
 4. Apply the inverse of the A-DPCM algorithm
